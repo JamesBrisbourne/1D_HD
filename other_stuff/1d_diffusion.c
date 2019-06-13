@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <vectors>
 
 int N = 4;
-double T_update[N];
+vector<double> T_update;
 double dt = 0.0001;
 double dx = 0.1;
 
@@ -9,8 +10,10 @@ double dx = 0.1;
 double time_integration(double *T_array, double dt);
 
 int main(void) {
-	double T_array[N] = {0};
-	double T_array[0] = 100;
+	vector<double> T_array;
+	fill (T_array.begin(), T_array,begin()+10, 0)
+	T_array.insert(T_array.begin(), 100)
+	
 	//printf("%f",T_array[1]);
 	time_integration(T_array, dt);
 

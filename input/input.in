@@ -1,0 +1,4 @@
+time_step:      0.1         [-]
+discretisation_x:       1.0         [-]
+N:          10                  [-]
+run:            100             [-]        
