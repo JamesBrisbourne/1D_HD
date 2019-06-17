@@ -37,12 +37,15 @@ int main() {
 	integration_timestep.str("");
 	integration_timestep << dt;
 
+
+
+	const input_variables inputs = input();
+
 	std::string outFileTemperatureProfile;	
 	outFileTemperatureProfile.append("Temperature_Profile_dt");
 	outFileTemperatureProfile.append(integration_timestep.str());
 	outFileTemperatureProfile.append(".dat");
 
-	const input_variables inputs = input();
 
 	// This is how to delare a vector (basically a better array), with N elements all of value 0
 	
@@ -52,7 +55,7 @@ int main() {
 	T_array[0] = 37;
 	
 	
-	for (int i = 0; i < runs;i++) { // iterates for as many times as specified in the 'runs' section of the input file
+	for (int i = 0; i < inputs.runs;i++) { // iterates for as many times as specified in the 'runs' section of the input file
 		T_array = time_integration(inputs.dt, inputs.dx, T_array); // runs euler step
 		time0 += inputs.dt; // increments time
 		print_config(outFileTemperatureProfile, inputs.dt, time0, T_array);
