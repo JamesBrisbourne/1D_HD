@@ -5,23 +5,23 @@
 
 using namespace std;
 
-void printVector(const std::vector<int> &n)
-{
+int N = 30;
 
-    for (int j = 0; j < n.size(); j++ )
-    {
-        cout << "n[" << j << "] = " << n[j] << endl;
-    }
+
+int main() {
+	// initialises 2D vector 
+	vector<vector<double>> T_array(4, vector<double> (N, 0));
+	T_array[0][5] = 5;
+
+
+	//prints all of the vector elements in blocks 
+	for (int i = 0; i < T_array.size(); i++) {
+    	for (int j = 0; j < T_array[i].size(); j++) {
+        	cout << T_array[i][j];
+    	}
+    	cout << std::endl;
+	}
+
+	return 0;
 
 }
-
-int main()
-{
-
-    vector<int> n = {1,2,3,4,5};
-
-    printVector(n);
-
-    return 0;
-}
-
