@@ -55,13 +55,8 @@ int main() {
 		T_array[2][i] = 1000;
 		T_array[3][i] = 4000;
 }
+	T_array[2][6] = 1000000;
 
-	// for (int i = 0; i < T_array.size(); i++) {
- //    	for (int j = 0; j < T_array[i].size(); j++) {
- //        	std::cout << T_array[i][j];
- //    	}
- //    	std::cout << std::endl;
-	// }
 
 	// changes the value of the first element in the array
 	T_array[0][0] = 37.0;
@@ -70,7 +65,7 @@ int main() {
 	
 	for (int i = 0; i < inputs.runs;i++) { // iterates for as many times as specified in the 'runs' section of the input file
 		T_array = time_integration(inputs.dt, inputs.dx, T_array); // runs euler step
-		printf("%f", time0);
+		//printf("%f", time0);
 
 		time0 += inputs.dt; // increments time
 		print_config(outFileTemperatureProfile, inputs.dt, time0, T_array);
@@ -85,6 +80,7 @@ vector<vector<double>> time_integration(double dt, double dx, const vector<vecto
 // T_update, finally T_update becomes T_array ready 
 // for the next iteration
 	const int N = T_array[0].size();
+	double prefactor = 0.0;
 	vector<vector<double>> T_update(4, vector<double> (N, 0));
 	T_update = T_array;
 	// boundary conditions
@@ -95,14 +91,29 @@ vector<vector<double>> time_integration(double dt, double dx, const vector<vecto
 
 	for (int i = 1; i < (N-1); i++) {
 		// euler step
-		//printf("%f", T_array[2][1]);
-		//double constant = prefactor(T_array, iter);
-		//printf("%f", constant);
-		T_update[0][i] = T_array[0][i] + (T_array[1][i]/( T_array[2][i] + T_array[3][i])) * dt * (T_array[0][i-1] - 2*T_array[0][i] + T_array[0][i+1])/(dx*dx);
 
+
+		if ((T_array[1][i] == T_array[1][i-1]) && (T_array[1][i] == T_array[1][i+1])) {
+			prefactor = (T_array[1][i]/( T_array[2][i] + T_array[3][i]));
+			printf("%d",i);
+
+			//printf("check");
+		}
+
+		else if ((T_array[1][i]) != (T_array[1][i+1])) {
+			//printf("Check");
+			prefactor =  (((T_array[1][i])+(T_array[1][i+1]))/2) / ((((T_array[2][i])+(T_array[2][i+1]))/2) * (((T_array[3][i])+(T_array[3][i+1]))/2)  );
+			printf("%d",i);
+		}
+
+		else if ((T_array[1][i]) != (T_array[1][i-1])) {
+			prefactor =  (((T_array[1][i])+(T_array[1][i-1]))/2) / ((((T_array[2][i])+(T_array[2][i-1]))/2) * (((T_array[3][i])+(T_array[3][i-1]))/2)  );
+			printf("%d", i);
+		}
+
+		T_update[0][i] = T_array[0][i] + prefactor * dt * (T_array[0][i-1] - 2*T_array[0][i] + T_array[0][i+1])/(dx*dx);
 	}
-
-
+	printf("\n");
 	return T_update;
 }
 
