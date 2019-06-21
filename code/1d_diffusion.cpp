@@ -51,15 +51,34 @@ int main() {
 	vector<vector<double>> T_array(4, vector<double> (inputs.N, 0));
 
 	for (int i = 0; i < inputs.N; i++) {
-		T_array[1][i] = 0.5;
+		T_array[1][i] = 1.0;
 		T_array[2][i] = 1000;
 		T_array[3][i] = 4000;
-}
-	T_array[2][6] = 1000000;
+	}
+
+	// T_array[2][10] = 50000;
+	// T_array[2][11] = 50000;
+	// T_array[2][12] = 50000;
+	// T_array[2][13] = 50000;
+	// T_array[2][14] = 50000;
+	// T_array[2][15] = 50000;
+	// T_array[2][16] = 50000;
+
+	// T_array[2][20] = 5;
+	// T_array[2][21] = 5;
+	// T_array[2][22] = 5;
+	// T_array[2][23] = 5;
+	// T_array[2][24] = 5;
+	// T_array[2][25] = 5;
+	// T_array[2][26] = 5;
 
 
 	// changes the value of the first element in the array
-	T_array[0][0] = 37.0;
+	T_array[0][0] = 0.0;
+	T_array[0][inputs.N] = 0.0;
+	for (int i = 45; i < 55; i++){
+		T_array[0][i] = 37;
+	}
 	print_config(outFileTemperatureProfile, inputs.dt, time0, T_array);
 
 	
@@ -83,48 +102,44 @@ vector<vector<double>> time_integration(double dt, double dx, const vector<vecto
 	double prefactor = 0.0;
 	vector<vector<double>> T_update(4, vector<double> (N, 0));
 	T_update = T_array;
+	
 	// boundary conditions
 	T_update[0][0] = T_array[0][0];
 	T_update[0][N] = T_array[0][N];
 
-	//printf("%f", T_array[0][0]);
+// 	for (int i = 1; i < (N-1); i++) {
+// 		// euler step
 
-	for (int i = 1; i < (N-1); i++) {
-		// euler step
+// 		if ((T_array[1][i] == T_array[1][i-1]) && (T_array[1][i] == T_array[1][i+1])) {
+// 			prefactor = (T_array[1][i]/( T_array[2][i] + T_array[3][i]));
 
+// 		}
 
-		if ((T_array[1][i] == T_array[1][i-1]) && (T_array[1][i] == T_array[1][i+1])) {
-			prefactor = (T_array[1][i]/( T_array[2][i] + T_array[3][i]));
-			printf("%d",i);
+// 		else if ((T_array[1][i]) != (T_array[1][i+1])) {
+// 			prefactor =  (((T_array[1][i])+(T_array[1][i+1]))/2) / ((((T_array[2][i])+(T_array[2][i+1]))/2) * (((T_array[3][i])+(T_array[3][i+1]))/2)  );
+// 		}
 
-			//printf("check");
-		}
+// 		else if ((T_array[1][i]) != (T_array[1][i-1])) {
+// 			prefactor =  (((T_array[1][i])+(T_array[1][i-1]))/2) / ((((T_array[2][i])+(T_array[2][i-1]))/2) * (((T_array[3][i])+(T_array[3][i-1]))/2)  );
+// 		}
 
-		else if ((T_array[1][i]) != (T_array[1][i+1])) {
-			//printf("Check");
-			prefactor =  (((T_array[1][i])+(T_array[1][i+1]))/2) / ((((T_array[2][i])+(T_array[2][i+1]))/2) * (((T_array[3][i])+(T_array[3][i+1]))/2)  );
-			printf("%d",i);
-		}
+// 		T_update[0][i] = T_array[0][i] + prefactor * dt * (T_array[0][i-1] - 2*T_array[0][i] + T_array[0][i+1])/(dx*dx);
+// 	}
+// 	return T_update;
+// }
 
-		else if ((T_array[1][i]) != (T_array[1][i-1])) {
-			prefactor =  (((T_array[1][i])+(T_array[1][i-1]))/2) / ((((T_array[2][i])+(T_array[2][i-1]))/2) * (((T_array[3][i])+(T_array[3][i-1]))/2)  );
-			printf("%d", i);
-		}
-
-		T_update[0][i] = T_array[0][i] + prefactor * dt * (T_array[0][i-1] - 2*T_array[0][i] + T_array[0][i+1])/(dx*dx);
-	}
-	printf("\n");
-	return T_update;
+for (int i = 1; i < (N-1); i++) {
+	T_update[0][i] = T_array[0][i] + dt/(dx*dx) * ( (0.5* (( (T_array[1][i]) / ((T_array[2][i])*(T_array[3][i])) ) + ( (T_array[1][i+1]) / ((T_array[2][i+1])*(T_array[3][i+1])) )) * (T_array[0][i+1] - T_array[0][i]))  - (0.5* (( (T_array[1][i]) / ((T_array[2][i])*(T_array[3][i])) ) + ( (T_array[1][i-1]) / ((T_array[2][i-1])*(T_array[3][i-1])) )) * (T_array[0][i] - T_array[0][i-1])) );
+}
+return T_update;
 }
 
-// double prefactor(const vector<vector<double>>& T_array, int iter) {
-// 	//prefactor_result = thermal_conductivity/(density + specific_heat);
-// 	double prefactor_result = 0.0;
-// 	//printf("%f", T_array[1][1]);
-// 	prefactor_result = T_array[1][iter]/( T_array[2][iter] +T_array[3][iter]);
-// 	//printf("%f",prefactor_result);
-// 	return prefactor_result;
-// }
+
+//T_update[0][i] = T_array[0][i] + dt/(dx*dx) * ( (0.5* (( (T_array[1][i]) / ((T_array[2][i])*(T_array[3][i])) ) + ( (T_array[1][i+1]) / ((T_array[2][i+1])*(T_array[3][i+1])) )) * (T_array[0][i+1] - T_array[0][i]))  - (0.5* (( (T_array[1][i]) / ((T_array[2][i])*(T_array[3][i])) ) + ( (T_array[1][i-1]) / ((T_array[2][i-1])*(T_array[3][i-1])) )) * (T_array[0][i] - T_array[0][i-1])) )                                           )
+
+
+
+
 
 void print_config(const std:: string &file_name, double dt, double time0, const vector<vector<double>>& T_array) {
 // handles all the needs of outputting data to a file.
