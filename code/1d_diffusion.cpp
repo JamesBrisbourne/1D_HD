@@ -5,13 +5,15 @@
 #include <sstream>
 #include <string>
 #include <math.h>
+#include <numeric>
+#include <iomanip>
 
 using std::vector;
 
-double density = 1000.0;
-double thermal_conductivity = 0.5;
-double specific_heat = 4000.0;
-double constant = thermal_conductivity/(density + specific_heat);
+// double density = 1000.0;
+// double thermal_conductivity = 0.5;
+// double specific_heat = 4000.0;
+// double constant = thermal_conductivity/(density + specific_heat);
 
 struct input_variables {
 	double dt;
@@ -48,56 +50,72 @@ int main() {
 
 	// This is how to delare a vector (basically a better array), with N elements all of value 0
 	
-	vector<vector<double>> T_array(4, vector<double> (inputs.N, 0));
+	vector<vector<double>> T_array(4, vector<double> (inputs.N+1, 0));
 
-	for (int i = 0; i < inputs.N; i++) {
+	for (int i = 0; i < inputs.N+1; i++) {
 		T_array[1][i] = 1.0;
-		T_array[2][i] = 1000;
-		T_array[3][i] = 4000;
+		T_array[2][i] = 1.0;
+		T_array[3][i] = 1.0;
 	}
 
-	// T_array[2][10] = 50000;
-	// T_array[2][11] = 50000;
-	// T_array[2][12] = 50000;
-	// T_array[2][13] = 50000;
-	// T_array[2][14] = 50000;
-	// T_array[2][15] = 50000;
-	// T_array[2][16] = 50000;
+	// for (int i = 0; i < (inputs.N)/2; i++) {
+	// 	T_array[1][i] = 10.0;
+	// 	T_array[2][i] = 2.0;
+	// 	T_array[3][i] = 5.0;
+	// }
 
-	// T_array[2][20] = 5;
-	// T_array[2][21] = 5;
-	// T_array[2][22] = 5;
-	// T_array[2][23] = 5;
-	// T_array[2][24] = 5;
-	// T_array[2][25] = 5;
-	// T_array[2][26] = 5;
+	// for (int i = ((inputs.N)/2 + 1); i < inputs.N; i++) {
+	// 	T_array[1][i] = 5.0;
+	// 	T_array[2][i] = 5.0;
+	// 	T_array[3][i] = 4.0;
+	// }
+
+	for (int i = 1; i < inputs.N; i++) {
+		T_array[0][i] = sin((4.0*atan(1)*i)/inputs.N);
+		printf("%f", T_array[0][i]);
+	}
 
 
 	// changes the value of the first element in the array
 	T_array[0][0] = 0.0;
 	T_array[0][inputs.N] = 0.0;
-	for (int i = 45; i < 55; i++){
-		T_array[0][i] = 37;
-	}
+	// for (int i = 46; i < 56; i++){
+	// 	T_array[0][i] = 1.0;
+	// }
+	
+	//T_array[0][(inputs.N)/2] = 100.0;
+
 	print_config(outFileTemperatureProfile, inputs.dt, time0, T_array);
 
 	
 	for (int i = 0; i < inputs.runs;i++) { // iterates for as many times as specified in the 'runs' section of the input file
 		T_array = time_integration(inputs.dt, inputs.dx, T_array); // runs euler step
 		//printf("%f", time0);
-
+		// double sum = 0.0;
+		// for (int j = 0; j < inputs.N; j++) {
+		// 	sum = sum + T_array[0][j];
+		// 	//printf("%f", sum);
+		// }
+		double sum  = std::accumulate(T_array[0].begin(), T_array[0].end(), 0.0f);
+		// std::cout << std::fixed;
+		// std::cout << std::setprecision(11);
+		// std::cout << sum << "\n";
+		
+		
+		
 		time0 += inputs.dt; // increments time
 		print_config(outFileTemperatureProfile, inputs.dt, time0, T_array);
 	}
 
 	return 0;
-}
+   }
 
 vector<vector<double>> time_integration(double dt, double dx, const vector<vector<double>>& T_array) {
 // does the Euler integration step on 'T_array' 
 // the new value for each position is loaded into 
 // T_update, finally T_update becomes T_array ready 
 // for the next iteration
+
 	const int N = T_array[0].size();
 	double prefactor = 0.0;
 	vector<vector<double>> T_update(4, vector<double> (N, 0));
@@ -123,14 +141,16 @@ vector<vector<double>> time_integration(double dt, double dx, const vector<vecto
 // 			prefactor =  (((T_array[1][i])+(T_array[1][i-1]))/2) / ((((T_array[2][i])+(T_array[2][i-1]))/2) * (((T_array[3][i])+(T_array[3][i-1]))/2)  );
 // 		}
 
-// 		T_update[0][i] = T_array[0][i] + prefactor * dt * (T_array[0][i-1] - 2*T_array[0][i] + T_array[0][i+1])/(dx*dx);
+// 		T_update[0][i] = T_array[0][i] + (0.5/(1000.0*4000.0)) * dt * (T_array[0][i-1] - 2.0*T_array[0][i] + T_array[0][i+1])/(dx*dx);
 // 	}
 // 	return T_update;
 // }
 
 for (int i = 1; i < (N-1); i++) {
 	T_update[0][i] = T_array[0][i] + dt/(dx*dx) * ( (0.5* (( (T_array[1][i]) / ((T_array[2][i])*(T_array[3][i])) ) + ( (T_array[1][i+1]) / ((T_array[2][i+1])*(T_array[3][i+1])) )) * (T_array[0][i+1] - T_array[0][i]))  - (0.5* (( (T_array[1][i]) / ((T_array[2][i])*(T_array[3][i])) ) + ( (T_array[1][i-1]) / ((T_array[2][i-1])*(T_array[3][i-1])) )) * (T_array[0][i] - T_array[0][i-1])) );
+
 }
+
 return T_update;
 }
 
@@ -146,7 +166,7 @@ void print_config(const std:: string &file_name, double dt, double time0, const 
 // the output file name is specified by the arguement used
 // when calling the function.
 
-    if (abs(time0 - dt) < (-dt/100.0)) {
+    if (abs(time0 - dt) < (dt/100.0)) {
     	std::ofstream outFile(file_name);
     	std::cout << "write to file " << file_name << std::endl;
     }
