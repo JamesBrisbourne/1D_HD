@@ -1,3 +1,10 @@
+//=================================================|
+//                James Brisbourne                 |
+//	       		 University of York                |
+//             Last Modified 05/07/19              |
+//=================================================|
+
+
 #include <stdio.h>
 #include <vector>
 #include <iostream>
@@ -60,8 +67,6 @@ int main() {
 		T_array[2][i] = 1.0;
 		T_array[3][i] = 1.0;
 	}
-
-
 
 	// INPUT TO TEST FOR ANALYTIC SOLUTION //
 
