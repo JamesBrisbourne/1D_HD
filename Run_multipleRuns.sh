@@ -4,7 +4,7 @@ fexe=executable
 exe=1d_test
 plot1=utility/plot.gnu
 
-Results=Run_1
+Results=Run_4
 
 
 
@@ -18,12 +18,12 @@ fi
 
 cd $fexe
 
-for dt0 in `seq 1 10`
+for runs0 in `seq 1 10000`
 do
 cd $fmain/$fexe
-dt=$(echo $dt0 | awk '{print $1/100.0}' )
-echo "time step is: " $dt
-f1=dt_$dt
+runs=$(echo $runs0 | awk '{print $1*100}' )
+echo "number of runs: " $runs
+f1=runs_$runs
 
 if [ -d $f1 ]
 then
@@ -40,10 +40,10 @@ mkdir input
 cp $fmain/$fexe/$exe $fexe/
 cp $fmain/$plot1 $fexe/
 cat << EOF > input/input.in
-time_step:      $dt         [-]
-discretisation_x:       1.0         [-]
+time_step:      0.0000001         [-]
+discretisation_x:       0.001         [-]
 N:          100                  [-]
-run:            1000             [-]        
+run:            $runs             [-]        
 EOF
 
 cd $fexe
@@ -53,8 +53,8 @@ echo "runing code ...."
 time ./$exe
 echo "finished, now plotting"
 gnuplot plot.gnu
-cp Temperature_Profile.png $fmain/$Results/Temperature_Profile_dt$dt.png
-echo "finished time step of ", $dt
+cp Temperature_Profile.png $fmain/$Results/Temperature_Profile_runs$runs.png
+echo "finished time step of ", $runs
 echo ""
 echo ""
 
