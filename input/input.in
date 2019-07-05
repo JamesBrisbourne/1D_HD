@@ -1,4 +1,4 @@
-time_step:      0.1         [-]
-discretisation_x:       1.0         [-]
-N:          10                  [-]
-run:            2000             [-]        
+time_step:       0.0000001     [-]
+discretisation_x:      0.001         [-]
+N:          100               [-]
+run:            50000     [-]        
